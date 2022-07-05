@@ -1,0 +1,38 @@
+# This workflow will install Rust dependencies, run formatters / linters / build, and execute the binary
+name: CI / CD
+
+# Triggers the workflow on push or pull request events but only for the main branch
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
+      - name: Run formatter check
+        run: |
+          cargo fmt --check
+      - name: Run linter
+        run: |
+          cargo clippy -- -D warnings
+      - name: Run build
+        run: |
+          cargo build --release
+      # To be removed once we transition to the actual recurring job
+      - name: Run
+        run: |
+          cargo run --release
+        env:
+          VENMO_ACCESS_TOKEN: ${{ secrets.VENMO_ACCESS_TOKEN }}
+          FRIEND_ID: ${{ secrets.FRIEND_ID }}
