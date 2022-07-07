@@ -49,13 +49,13 @@ enum VenmoChargeCreateResponse {
 impl fmt::Display for VenmoChargeCreateError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            VenmoChargeCreateError::JsonParseError(ref e) => {
+            VenmoChargeCreateError::JsonParse(ref e) => {
                 write!(f, "Error parsing JSON: {:?}", e)
             }
-            VenmoChargeCreateError::CallResponseError(ref e) => {
+            VenmoChargeCreateError::CallResponse(ref e) => {
                 write!(f, "Error from response: {:?}", e)
             }
-            VenmoChargeCreateError::WithinResponseError(ref e) => write!(
+            VenmoChargeCreateError::WithinResponse(ref e) => write!(
                 f,
                 "Error within response with code [{:?}] and message: {:?}",
                 e.code, e.message
@@ -66,13 +66,13 @@ impl fmt::Display for VenmoChargeCreateError {
 
 impl From<Error> for VenmoChargeCreateError {
     fn from(e: Error) -> Self {
-        VenmoChargeCreateError::JsonParseError(e)
+        VenmoChargeCreateError::JsonParse(e)
     }
 }
 
 impl From<UreqError> for VenmoChargeCreateError {
     fn from(e: UreqError) -> Self {
-        VenmoChargeCreateError::CallResponseError(e)
+        VenmoChargeCreateError::CallResponse(e)
     }
 }
 
@@ -110,28 +110,28 @@ fn create_venmo_charge_create_params(
             phone: Some(phone_number),
             email: None,
             user_id: None,
-            amount: amount,
-            access_token: access_token,
+            amount,
+            access_token,
             note: note_text,
-            audience: audience,
+            audience,
         },
         VenmoPaymentTargetUniqueId::Email(email) => VenmoChargeCreateParameters {
             phone: None,
             email: Some(email),
             user_id: None,
-            amount: amount,
-            access_token: access_token,
+            amount,
+            access_token,
             note: note_text,
-            audience: audience,
+            audience,
         },
         VenmoPaymentTargetUniqueId::UserId(user_id) => VenmoChargeCreateParameters {
             phone: None,
             email: None,
             user_id: Some(user_id),
-            amount: amount,
-            access_token: access_token,
+            amount,
+            access_token,
             note: note_text,
-            audience: audience,
+            audience,
         },
     }
 }
@@ -159,7 +159,7 @@ fn execute_payment_charge_request(
     match parsed_json_response {
         VenmoChargeCreateResponse::DataResponse { data } => Ok(data),
         VenmoChargeCreateResponse::ErrorResponse { error } => {
-            Err(VenmoChargeCreateError::WithinResponseError(error))
+            Err(VenmoChargeCreateError::WithinResponse(error))
         }
     }
 }
@@ -172,9 +172,9 @@ pub struct VenmoChargeCreateResponseError {
 
 #[derive(Debug)]
 pub enum VenmoChargeCreateError {
-    CallResponseError(ureq::Error),
-    JsonParseError(std::io::Error),
-    WithinResponseError(VenmoChargeCreateResponseError),
+    CallResponse(ureq::Error),
+    JsonParse(std::io::Error),
+    WithinResponse(VenmoChargeCreateResponseError),
 }
 
 #[derive(Debug)]
