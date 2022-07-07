@@ -186,8 +186,10 @@ pub struct VenmoCharge {
 
 #[derive(Debug, PartialEq)]
 pub enum VenmoPaymentTargetUniqueId {
+    // TODO | Consider removing this since we will have generic support for this later
     #[allow(dead_code)]
     PhoneNumber(String),
+    // TODO | Consider removing this since we will have generic support for this later
     #[allow(dead_code)]
     Email(String),
     UserId(String),
