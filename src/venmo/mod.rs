@@ -186,7 +186,9 @@ pub struct VenmoCharge {
 
 #[derive(Debug, PartialEq)]
 pub enum VenmoPaymentTargetUniqueId {
+    #[allow(dead_code)]
     PhoneNumber(String),
+    #[allow(dead_code)]
     Email(String),
     UserId(String),
 }
